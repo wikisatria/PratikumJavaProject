@@ -1,6 +1,5 @@
 package frame;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 import helpers.Koneksi;
 
 import javax.swing.*;
@@ -11,7 +10,7 @@ import java.awt.event.WindowEvent;
 import java.sql.*;
 
 public class KabupatenViewFrame extends JFrame {
-    private JPanel mainpanel;
+    private JPanel mainPanel;
     private JPanel cariPanel;
     private JScrollPane viewScrollPane;
     private JPanel buttonPanel;
@@ -26,6 +25,10 @@ public class KabupatenViewFrame extends JFrame {
     private JButton tutupButton;
 
     public KabupatenViewFrame(){
+            tambahButton.addActionListener((e -> {
+                KabupatenInputFrrame inputFrame= new KabupatenInputFrrame();
+                inputFrame.setVisible(true);
+            }));
         tutupButton.addActionListener(e -> {
             dispose();
         });
@@ -89,8 +92,10 @@ public class KabupatenViewFrame extends JFrame {
         init();
     }
 
+
+
     public  void  init(){
-        setContentPane(mainpanel);
+        setContentPane(mainPanel);
         setTitle("Data Kabupaten");
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
