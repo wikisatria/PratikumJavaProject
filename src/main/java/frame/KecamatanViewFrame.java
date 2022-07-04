@@ -23,7 +23,6 @@ public class KecamatanViewFrame extends JFrame {
     private JButton batalButton;
     private JButton cetakButton;
     private JButton tutupButton;
-
     public KecamatanViewFrame(){
         ubahButton.addActionListener(e -> {
             int barisTerpilih = viewTable.getSelectedRow();
@@ -55,17 +54,22 @@ public class KecamatanViewFrame extends JFrame {
             }
             Connection c = Koneksi.getConnection();
             String keyword = "%" + cariTextField.getText() + "%";
-            String searchSQL = "SELECT * FROM kecamatan WHERE nama like ?";
+            String searchSQL = "SELECT K.*,B.nama AS nama_kabupaten " +
+                    "FROM kecamatan K " +
+                    "LEFT JOIN kabupaten B ON K.kabupaten_id = B.id " +
+                    "WHERE K.nama like ? OR B.nama like ?";
             try {
                 PreparedStatement ps = c.prepareStatement(searchSQL);
                 ps.setString(1, keyword);
+                ps.setString(2, keyword);
                 ResultSet rs = ps.executeQuery();
                 DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
                 dtm.setRowCount(0);
-                Object[] row = new Object[2];
+                Object[] row = new Object[3];
                 while (rs.next()){
                     row[0] = rs.getInt("id");
                     row[1] = rs.getString("nama");
+                    row[2] = rs.getString("nama_kabupaten");
                     dtm.addRow(row);
                 }
             } catch (SQLException ex) {
@@ -118,17 +122,20 @@ public class KecamatanViewFrame extends JFrame {
 
     public void isiTable(){
         Connection c = Koneksi.getConnection();
-        String selectSQL = "SELECT * FROM kecamatan";
+        String selectSQL = "SELECT K.*,B.nama AS nama_kabupaten FROM kecamatan K " +
+                "LEFT JOIN kabupaten B ON K.kabupaten_id = B.id";
         try {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
-            String[] header = {"Id","Nama Kecamatan"};
+            String[] header = {"Id","Nama Kecamatan", "Nama Kabupaten"};
             DefaultTableModel dtm = new DefaultTableModel(header,0);
             viewTable.setModel(dtm);
-            Object[] row = new Object[2];
+            viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
+            Object[] row = new Object[3];
             while (rs.next()){
                 row[0] = rs.getInt("id");
                 row[1] = rs.getString("nama");
+                row[2] = rs.getString("nama_kabupaten");
                 dtm.addRow(row);
             }
         } catch (SQLException e) {
